@@ -7,6 +7,7 @@ use App\Models\Pagamento;
 use App\Models\Prestador;
 use App\Models\User;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use Karson\MpesaPhpSdk\Mpesa;
@@ -51,24 +52,39 @@ class MpesaPaymentGateway implements PaymentGatewayInterface
             return;
         }
 
-        $pagamento = Pagamento::where('referencia_externa', $referencia)->first();
+        DB::transaction(function () use ($payload, $referencia, $status): void {
+            $pagamento = Pagamento::where('referencia_externa', $referencia)
+                ->orWhere('metadados->internal_reference', $referencia)
+                ->lockForUpdate()
+                ->first();
 
-        if (! $pagamento) {
-            Log::warning('Callback M-Pesa sem pagamento correspondente', $payload);
-            return;
-        }
+            if (! $pagamento) {
+                Log::warning('Callback M-Pesa sem pagamento correspondente', $payload);
+                return;
+            }
 
-        $metadados = $pagamento->metadados ?? [];
-        $metadados['callback'] = $payload;
-        $pagamento->metadados = $metadados;
+            $metadados = $pagamento->metadados ?? [];
+            $metadados['callback'] = $payload;
+            $metadados['mpesa_reference'] = $referencia;
+            $metadados['mpesa_status'] = $status;
+            $pagamento->metadados = $metadados;
 
-        if ($this->callbackComSucesso($payload, $status)) {
-            $pagamento->estado_pagamento = 'confirmado';
-        } elseif ($this->callbackComFalha($payload, $status)) {
-            $pagamento->estado_pagamento = 'falhado';
-        }
+            // Preenche referência externa caso só venha no callback
+            if (! $pagamento->referencia_externa) {
+                $pagamento->referencia_externa = $referencia;
+            }
 
-        $pagamento->save();
+            if ($this->callbackComSucesso($payload, $status) && $pagamento->estado_pagamento !== 'confirmado') {
+                $pagamento->estado_pagamento = 'confirmado';
+            } elseif (
+                $this->callbackComFalha($payload, $status)
+                && $pagamento->estado_pagamento !== 'confirmado'
+            ) {
+                $pagamento->estado_pagamento = 'falhado';
+            }
+
+            $pagamento->save();
+        });
     }
 
     private function iniciarCobranca(Pagamento $pagamento, ?string $msisdn, string $descricao): void
