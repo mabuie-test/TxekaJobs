@@ -59,10 +59,10 @@ php artisan db:seed --class=DatabaseSeeder  # opcional se existirem seeds
 ---------------------------------
 Com o token definido no `.env`, faça um pedido HTTP (via Postman, cURL ou PowerShell) para o endpoint protegido:
 ```powershell
-curl -X POST http://localhost/api/admin/register `
+ curl -X POST http://localhost/api/admin/register `
   -H "Authorization: Bearer <ADMIN_REGISTRATION_TOKEN>" `
   -H "Content-Type: application/json" `
-  -d '{
+ -d '{
     "name": "Super Admin",
     "email": "admin@txekajobs.test",
     "phone": "+258840000001",
@@ -71,10 +71,13 @@ curl -X POST http://localhost/api/admin/register `
   }'
 ```
 
+Para criar mais admins no futuro, reutilize o mesmo token ou altere-o no `.env` e reinicie o Apache/PHP-FPM.
+
 8) Preparar filas e scheduler
 -----------------------------
 - Criar a tabela de filas (já incluída na migration principal). Para processar jobs: `php artisan queue:work` numa janela do PowerShell.
-- Para simular o cron do Laravel, crie uma tarefa agendada do Windows que execute `php artisan schedule:run` a cada minuto (Task Scheduler > Create Basic Task > Trigger: Daily, Repeat every 1 minute for 1 day, Action: Start a program -> Program/script: php, Arguments: "artisan schedule:run", Start in: caminho do projecto).
+- Para simular o cron do Laravel, crie uma tarefa agendada do Windows que execute `php artisan schedule:run` a cada minuto (Task Scheduler > Create Basic Task > Trigger: Daily, Repeat every 1 minute for 1 day, Action: Start a program -> Program/script: php, Arguments: "artisan schedule:run", Start in: caminho do projecto). Este cron dispara o recálculo nocturno `txeka:recalcular-estatisticas` e o matching de prestadores.
+- Execute manualmente o comando de reputação se quiser validar: `php artisan txeka:recalcular-estatisticas` ou `php artisan txeka:recalcular-estatisticas --queued` para enviar para a fila.
 
 9) Servir a aplicação
 ---------------------

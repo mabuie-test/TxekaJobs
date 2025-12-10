@@ -39,4 +39,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(OtpToken::class);
     }
+
+    public function cliente()
+    {
+        return $this->hasOne(Cliente::class);
+    }
+
+    public function prestador()
+    {
+        return $this->hasOne(Prestador::class);
+    }
 }

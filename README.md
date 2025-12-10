@@ -14,7 +14,9 @@ Plataforma de marketplace de serviços para Moçambique baseada em Laravel 11 e 
 - Gateway de pagamento mock em `App\Services\Payments\MockPaymentGateway` actualiza pagamentos para estado confirmado.
 - Gateway M-Pesa baseado em [`karson/mpesa-php-sdk`](https://github.com/karson/mpesa-php-sdk) pode ser activado configurando `PAYMENT_GATEWAY_DRIVER=mpesa` e credenciais `MPESA_*` no `.env`. Configure `MPESA_CALLBACK_URL` para apontar para `/api/pagamentos/mpesa/callback` exposto pela aplicação.
 - Serviços de notificação (`SmsService` e `WhatsappService`) guardam mensagens em tabela `notificacoes` para processamento posterior.
-- Máquina de estados de serviços em `App\Services\Servicos\ServicoStateService` valida transições críticas.
+- Máquina de estados de serviços em `App\Services\Servicos\ServicoStateService` valida transições críticas e emite eventos que alimentam matching e reputação.
+- Matching e ranking de prestadores em `App\Services\Servicos\PrestadorRankingService`, com job `MatchPrestadoresJob` disparado ao criar serviços.
+- Reputação e estatísticas recalculadas por `EstatisticasPrestadorService` via comando `php artisan txeka:recalcular-estatisticas` (agendado às 02:00 pela schedule).
 - Autenticação reforçada: login por email/telefone com password, envio de OTP por SMS e marcação de dispositivos confiáveis em `device_sessions` + `otp_tokens`.
 - Endpoint protegido para criar administradores: `POST /api/admin/register` com header `Authorization: Bearer {ADMIN_REGISTRATION_TOKEN}`; configure `ADMIN_REGISTRATION_TOKEN` no `.env`.
 - Consulte `guide.txt` para guia passo-a-passo no Windows incluindo criação da base de dados e agendamento de filas.

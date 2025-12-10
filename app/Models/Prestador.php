@@ -9,6 +9,8 @@ class Prestador extends Model
 {
     use HasFactory;
 
+    protected $table = 'prestadores';
+
     protected $fillable = [
         'user_id',
         'bio',
@@ -32,4 +34,39 @@ class Prestador extends Model
         'esta_disponivel' => 'boolean',
         'aceita_servicos_urgentes' => 'boolean',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function categorias()
+    {
+        return $this->belongsToMany(Categoria::class, 'prestador_categoria');
+    }
+
+    public function zonas()
+    {
+        return $this->belongsToMany(Zona::class, 'prestador_zona');
+    }
+
+    public function estatisticas()
+    {
+        return $this->hasOne(EstatisticasPrestador::class);
+    }
+
+    public function subscricoes()
+    {
+        return $this->hasMany(SubscricaoPrestador::class);
+    }
+
+    public function subscricaoAtiva()
+    {
+        return $this->hasOne(SubscricaoPrestador::class)->ativa()->latestOfMany('data_inicio');
+    }
+
+    public function avaliacoes()
+    {
+        return $this->hasMany(Avaliacao::class);
+    }
 }
