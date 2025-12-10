@@ -1,6 +1,7 @@
 <?php
 
 use App\Console\Commands\RecalcularEstatisticasPrestadores;
+use App\Providers\AuthServiceProvider;
 use App\Providers\EventServiceProvider;
 use App\Providers\PaymentServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
@@ -9,6 +10,7 @@ use Illuminate\Foundation\Application;
 return Application::configure(basePath: dirname(__DIR__))
     ->withProviders([
         PaymentServiceProvider::class,
+        AuthServiceProvider::class,
         EventServiceProvider::class,
     ])
     ->withRouting(
