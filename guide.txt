@@ -41,6 +41,12 @@ CREATE DATABASE txekajobs CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 Certifique-se de que o utilizador definido no `.env` tem permissões de criação e escrita nesta base.
 
+*Atalho com o esquema completo*: se quiser criar todas as tabelas de uma vez (útil em ambientes restritos), pode importar `schema.sql` que acompanha o projecto:
+```powershell
+mysql -u <user> -p txekajobs < schema.sql
+```
+Isto aplica o desenho completo das migrations, incluindo índices e chaves estrangeiras.
+
 5) Instalar dependências PHP
 ----------------------------
 ```powershell

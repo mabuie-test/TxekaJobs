@@ -8,6 +8,7 @@ Plataforma de marketplace de serviços para Moçambique baseada em Laravel 11 e 
 3. Gere chave de aplicação com `php artisan key:generate`.
 4. Execute migrations com `php artisan migrate`.
 5. Inicie servidor com `php artisan serve` e filas com `php artisan queue:work`.
+6. Se precisar preparar a base sem correr migrations (ou para validar o desenho), o ficheiro `schema.sql` contém todo o esquema SQL pronto para `mysql -u user -p < schema.sql`.
 
 ## Notas
 - Sistema de filas configurado para driver de base de dados.
@@ -22,3 +23,4 @@ Plataforma de marketplace de serviços para Moçambique baseada em Laravel 11 e 
 - Endpoint protegido para criar administradores: `POST /api/admin/register` com header `Authorization: Bearer {ADMIN_REGISTRATION_TOKEN}`; configure `ADMIN_REGISTRATION_TOKEN` no `.env`.
 - Backups: comando `php artisan txeka:backup-diario` gera ficheiros `.sql` em `storage/app/backups` utilizando `mysqldump`; o scheduler corre diariamente às 03:00. Interface web em `/admin/backups` permite gerar, descarregar e importar backups (restrito a administradores).
 - Consulte `guide.txt` para guia passo-a-passo no Windows incluindo criação da base de dados e agendamento de filas.
+- O ficheiro `schema.sql` espelha todas as migrations (`database/migrations`) para cenários onde é necessário criar ou auditar o esquema directamente em MySQL.
