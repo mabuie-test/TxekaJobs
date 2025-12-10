@@ -1,26 +1,45 @@
 # Txeka Jobs
 
-Plataforma de marketplace de serviços para Moçambique baseada em Laravel 11 e PHP 8.2+, preparada para alojamento LAMP. Este repositório contém esquema de dados inicial, serviços de domínio para pagamentos mock, notificações SMS/WhatsApp e máquina de estados de serviços.
+Plataforma de marketplace de serviços para Moçambique baseada em Laravel 11 e PHP 8.2+, preparada para alojamento LAMP. O projecto inclui máquina de estados de serviços, monetização (leads, subscrições, reservas), integração M-Pesa e flows completos para clientes, prestadores e administradores.
 
 ## Passos rápidos
-1. Copie `.env.example` para `.env` e configure credenciais MySQL.
-2. Instale dependências com `composer install` (necessita acesso à internet).
-3. Gere chave de aplicação com `php artisan key:generate`.
-4. Execute migrations com `php artisan migrate`.
-5. Inicie servidor com `php artisan serve` e filas com `php artisan queue:work`.
-6. Se precisar preparar a base sem correr migrations (ou para validar o desenho), o ficheiro `schema.sql` contém todo o esquema SQL pronto para `mysql -u user -p < schema.sql`.
+1. Copie `.env.example` para `.env` e configure credenciais MySQL e `ADMIN_REGISTRATION_TOKEN`.
+2. Instale dependências: `composer install` e gere a chave `php artisan key:generate`.
+3. Crie a base de dados `txekajobs` e execute `php artisan migrate` (ou importe `schema.sql` com `mysql -u user -p txekajobs < schema.sql`).
+4. Arranque serviços locais: `php artisan serve`, `php artisan queue:work` e agende `php artisan schedule:run` por cron a cada minuto.
+5. Crie um administrador via `POST /api/admin/register` com header `Authorization: Bearer {ADMIN_REGISTRATION_TOKEN}` e payload de utilizador.
+6. Aceda ao frontend: `/login` (OTP por SMS), `/cliente/servicos` para pedidos, `/prestador/propostas` para propostas e `/admin/backups` para gestão de backups.
 
-## Notas
-- Sistema de filas configurado para driver de base de dados.
-- Gateway de pagamento mock em `App\Services\Payments\MockPaymentGateway` actualiza pagamentos para estado confirmado.
-- Gateway M-Pesa baseado em [`karson/mpesa-php-sdk`](https://github.com/karson/mpesa-php-sdk) pode ser activado configurando `PAYMENT_GATEWAY_DRIVER=mpesa` e credenciais `MPESA_*` no `.env`. Configure `MPESA_CALLBACK_URL` para apontar para `/api/pagamentos/mpesa/callback` exposto pela aplicação.
-- Serviços de notificação (`SmsService` e `WhatsappService`) guardam mensagens em tabela `notificacoes` para processamento posterior.
-- Máquina de estados de serviços em `App\Services\Servicos\ServicoStateService` valida transições críticas e emite eventos que alimentam matching e reputação.
-- Fluxo web inicial para clientes criarem pedidos (`Cliente\ServicoController`) e prestadores responderem com propostas com cobrança de leads (`Prestador\PropostaController` + `LeadPaymentService`).
-- Matching e ranking de prestadores em `App\Services\Servicos\PrestadorRankingService`, com job `MatchPrestadoresJob` disparado ao criar serviços.
-- Reputação e estatísticas recalculadas por `EstatisticasPrestadorService` via comando `php artisan txeka:recalcular-estatisticas` (agendado às 02:00 pela schedule).
-- Autenticação reforçada: login por email/telefone com password, envio de OTP por SMS e marcação de dispositivos confiáveis em `device_sessions` + `otp_tokens`.
-- Endpoint protegido para criar administradores: `POST /api/admin/register` com header `Authorization: Bearer {ADMIN_REGISTRATION_TOKEN}`; configure `ADMIN_REGISTRATION_TOKEN` no `.env`.
-- Backups: comando `php artisan txeka:backup-diario` gera ficheiros `.sql` em `storage/app/backups` utilizando `mysqldump`; o scheduler corre diariamente às 03:00. Interface web em `/admin/backups` permite gerar, descarregar e importar backups (restrito a administradores).
-- Consulte `guide.txt` para guia passo-a-passo no Windows incluindo criação da base de dados e agendamento de filas.
-- O ficheiro `schema.sql` espelha todas as migrations (`database/migrations`) para cenários onde é necessário criar ou auditar o esquema directamente em MySQL.
+## Arquitectura em síntese
+- **Domínio**: matching de prestadores, monetização (leads, subscrições, reservas), reputação, litígios e notificações multicanal.
+- **Pagamentos**: driver configurável (`mock` ou `mpesa`), callbacks idempotentes em `/api/pagamentos/mpesa/callback`, ledger único em `pagamentos` com metadados JSON.
+- **Segurança**: login por email/telefone + password + OTP SMS; dispositivos confiáveis em `device_sessions`; policies para serviços; endpoint de admin protegido por token.
+- **Estados de serviço**: `App\Services\Servicos\ServicoStateService` com eventos `ServicoCriado/Contratado/Concluido` e jobs de matching.
+- **Ranking/Reputação**: `PrestadorRankingService` e `EstatisticasPrestadorService` alimentados por avaliações e histórico de litígios.
+- **Filas/cron**: driver database; `schedule:run` dispara matching, recálculo e backup diário (`txeka:backup-diario`).
+- **PWA**: manifesto e service worker em `public/manifest.json` e `public/service-worker.js` para cache de assets estáticos.
+
+## Componentes e rotas chave
+- **Autenticação**: `/login`, `/otp`, serviços `OtpService` e modelos `OtpToken`/`DeviceSession`.
+- **Clientes**: `/cliente/servicos` (listar/criar), `/cliente/servicos/{id}` (detalhes, propostas, timeline). Matching é enfileirado via eventos de serviço.
+- **Prestadores**: `/prestador/propostas` (listar) e `/prestador/propostas/create` (enviar proposta) com monetização de lead (`LeadPaymentService`).
+- **Admin**: `/admin/backups` (gerar, descarregar, restaurar) e API `/api/admin/register` para bootstrap seguro.
+- **Pagamentos**: `App\Services\Payments` com gateways Mock e M-Pesa; callbacks em `/api/pagamentos/mpesa/callback`.
+
+## Documentação detalhada
+- `guide.txt`: passo-a-passo completo para Windows (instalação, base de dados, cron, filas e bootstrap de admin).
+- `docs/ARCHITECTURE_AND_OPERATIONS.md`: visão abrangente de modelos, fluxos de pagamento, máquina de estados, operação diária, troubleshooting e segurança.
+- `schema.sql`: DDL completo espelhando as migrations para importação directa em MySQL.
+
+## Notas operacionais
+- Filas usam driver de base de dados; configure cron minutely para `php artisan schedule:run`.
+- Backup diário em `storage/app/backups` via comando `txeka:backup-diario` (agenda às 03:00); interface `/admin/backups` permite download/restauro.
+- Para produção, configure `PAYMENT_GATEWAY_DRIVER=mpesa` e variáveis `MPESA_*`; mantenha `mock` em desenvolvimento.
+- Em caso de recuperação, importe `schema.sql` e aplique o backup mais recente.
+
+## Testes
+- Unit: `OtpServiceTest`, `LeadPaymentServiceTest`, `ServicoStateServiceTest`, `MpesaPaymentGatewayTest`, `DatabaseBackupServiceTest`.
+- Feature: `AdminRegistrationTest`, `MpesaCallbackControllerTest`.
+- Executar: `composer install && cp .env.example .env && php artisan key:generate && php artisan migrate && ./vendor/bin/phpunit`.
+
+Para detalhes adicionais consulte `docs/ARCHITECTURE_AND_OPERATIONS.md`.

@@ -7,10 +7,11 @@ Este passo-a-passo assume um portátil/desktop Windows 10+ com permissão para i
 ------------------
 - Instalar **Git** (https://git-scm.com/download/win) e garantir que o comando `git` aparece no PowerShell.
 - Instalar **PHP 8.2+** (recomendado via https://windows.php.net/download ou usando o instalador do Chocolatey: `choco install php --version=8.2`).
-  - Confirmar com `php -v` no PowerShell.
+ - Confirmar com `php -v` no PowerShell.
 - Instalar **Composer** (https://getcomposer.org/Composer-Setup.exe) e validar com `composer -V`.
 - Instalar **MySQL 8** (pode usar o **MySQL Installer** ou o **XAMPP/WAMP** que já trazem MySQL e Apache).
 - Garantir que o binário `mysql` está no PATH (testar com `mysql --version`).
+- Opcional: instalar **Node.js** apenas se desejar compilar assets adicionais; o projecto já traz Bootstrap compilado.
 
 2) Clonar o projecto
 ---------------------
@@ -32,6 +33,7 @@ Edite `.env` (Notepad/VS Code) e configure:
 - `PAYMENT_GATEWAY_DRIVER=mock` para ambiente local.
 - `ADMIN_REGISTRATION_TOKEN=<token forte para criar admins>`
 - `MPESA_*` podem ficar em branco em desenvolvimento ou com valores sandbox, pois o gateway mock será usado.
+- `RESERVA_PERCENTUAL_PADRAO` e `VALOR_LEAD_PADRAO` podem ser ajustados se quiser simular montantes diferentes.
 
 4) Criar a base de dados
 -------------------------
@@ -46,6 +48,7 @@ Certifique-se de que o utilizador definido no `.env` tem permissões de criaçã
 mysql -u <user> -p txekajobs < schema.sql
 ```
 Isto aplica o desenho completo das migrations, incluindo índices e chaves estrangeiras.
+Para validar a integridade após importar, pode executar `mysqlcheck txekajobs -u <user> -p` e confirmar ausência de erros.
 
 5) Instalar dependências PHP
 ----------------------------
@@ -84,6 +87,7 @@ Para criar mais admins no futuro, reutilize o mesmo token ou altere-o no `.env` 
 - Criar a tabela de filas (já incluída na migration principal). Para processar jobs: `php artisan queue:work` numa janela do PowerShell.
 - Para simular o cron do Laravel, crie uma tarefa agendada do Windows que execute `php artisan schedule:run` a cada minuto (Task Scheduler > Create Basic Task > Trigger: Daily, Repeat every 1 minute for 1 day, Action: Start a program -> Program/script: php, Arguments: "artisan schedule:run", Start in: caminho do projecto). Este cron dispara o recálculo nocturno `txeka:recalcular-estatisticas` e o matching de prestadores.
 - Execute manualmente o comando de reputação se quiser validar: `php artisan txeka:recalcular-estatisticas` ou `php artisan txeka:recalcular-estatisticas --queued` para enviar para a fila.
+- Para testar a fila localmente, crie um serviço pelo frontend e verifique que a tabela `jobs` recebe `MatchPrestadoresJob`; depois corra `php artisan queue:work` e valide que o job é removido.
 
 10.1) Backups automáticos e recuperação
 ---------------------------------------
@@ -92,6 +96,7 @@ Para criar mais admins no futuro, reutilize o mesmo token ou altere-o no `.env` 
 - Para gerar um backup manual, aceda à interface `/admin/backups` autenticado como admin e clique em "Gerar backup agora".
 - Para descarregar um backup existente, use o botão "Download" na mesma página e guarde o ficheiro em local seguro.
 - Para restaurar após falha grave, vá a `/admin/backups`, seleccione o ficheiro `.sql` guardado e envie. O sistema irá aplicar o SQL via `mysql`, substituindo o estado actual da base. Considere colocar a aplicação em modo manutenção (`php artisan down`) antes de restaurar e voltar a subir (`php artisan up`).
+- Em ambientes partilhados, confirme o limite de tempo de execução de scripts PHP; restauros grandes podem exigir execução pelo terminal: `mysql -u <user> -p txekajobs < caminho/do/backup.sql`.
 
 9) Servir a aplicação
 ---------------------
@@ -106,11 +111,15 @@ php artisan serve
 - Criar um utilizador cliente via `/register` (se existir o formulário) ou directamente em base de dados.
 - Criar um prestador e associar categorias/zonas.
 - Criar um serviço e submeter proposta para testar o gateway mock e os fluxos de OTP.
+- Testar o callback M-Pesa mock: enviar `POST` para `/api/pagamentos/mpesa/callback` com payload de exemplo (ver testes em `tests/Feature/Payments/MpesaCallbackControllerTest.php`) e confirmar mudança de estado de pagamento para `confirmado`.
+- Gerar um backup e restaurar num schema limpo para validar o processo de recuperação.
 
 11) Tips adicionais para Windows
 --------------------------------
 - Se usar WSL, pode montar o projecto na pasta Linux e aceder ao MySQL/Apache do Windows via `localhost`.
 - Para garantir permissões de escrita nas pastas `storage` e `bootstrap/cache`, execute `icacls storage /grant %USERNAME%:F /t` e `icacls bootstrap\cache /grant %USERNAME%:F /t`.
 - Mantenha o `APP_DEBUG=false` em produção e configure certificados HTTPS quando publicar.
+- Em produção, considere proteger `/api/pagamentos/mpesa/callback` por allowlist de IP no Apache/Nginx para reduzir riscos de chamadas maliciosas.
+- Defina rotação de logs do Windows (ou use `logrotate` no WSL) para `storage/logs/laravel.log`.
 
 Com estes passos, terá o Txeka Jobs a funcionar num ambiente Windows, com um administrador inicial criado por endpoint seguro e com todas as migrations aplicadas.
