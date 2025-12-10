@@ -16,3 +16,5 @@ Plataforma de marketplace de serviços para Moçambique baseada em Laravel 11 e 
 - Serviços de notificação (`SmsService` e `WhatsappService`) guardam mensagens em tabela `notificacoes` para processamento posterior.
 - Máquina de estados de serviços em `App\Services\Servicos\ServicoStateService` valida transições críticas.
 - Autenticação reforçada: login por email/telefone com password, envio de OTP por SMS e marcação de dispositivos confiáveis em `device_sessions` + `otp_tokens`.
+- Endpoint protegido para criar administradores: `POST /api/admin/register` com header `Authorization: Bearer {ADMIN_REGISTRATION_TOKEN}`; configure `ADMIN_REGISTRATION_TOKEN` no `.env`.
+- Consulte `guide.txt` para guia passo-a-passo no Windows incluindo criação da base de dados e agendamento de filas.

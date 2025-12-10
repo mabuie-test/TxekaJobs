@@ -11,4 +11,6 @@ return [
     'faker_locale' => 'pt_PT',
     'key' => env('APP_KEY'),
     'cipher' => 'AES-256-CBC',
+
+    'admin_registration_token' => env('ADMIN_REGISTRATION_TOKEN'),
 ];

@@ -1,0 +1,99 @@
+Guia de arranque no Windows (Txeka Jobs)
+======================================
+
+Este passo-a-passo assume um portátil/desktop Windows 10+ com permissão para instalar software. O objectivo é chegar a um ambiente local funcional que reflita um hosting LAMP simples.
+
+1) Pré-requisitos
+------------------
+- Instalar **Git** (https://git-scm.com/download/win) e garantir que o comando `git` aparece no PowerShell.
+- Instalar **PHP 8.2+** (recomendado via https://windows.php.net/download ou usando o instalador do Chocolatey: `choco install php --version=8.2`).
+  - Confirmar com `php -v` no PowerShell.
+- Instalar **Composer** (https://getcomposer.org/Composer-Setup.exe) e validar com `composer -V`.
+- Instalar **MySQL 8** (pode usar o **MySQL Installer** ou o **XAMPP/WAMP** que já trazem MySQL e Apache).
+- Garantir que o binário `mysql` está no PATH (testar com `mysql --version`).
+
+2) Clonar o projecto
+---------------------
+```powershell
+cd %USERPROFILE%\source
+git clone https://seu-repo/TxekaJobs.git
+cd TxekaJobs
+```
+
+3) Configurar variáveis de ambiente
+-----------------------------------
+Crie o ficheiro `.env` a partir do modelo:
+```powershell
+copy .env.example .env
+```
+Edite `.env` (Notepad/VS Code) e configure:
+- `DB_HOST=127.0.0.1`, `DB_PORT=3306`, `DB_DATABASE=txekajobs`, `DB_USERNAME`/`DB_PASSWORD` de acordo com o MySQL local.
+- `APP_URL=http://localhost`
+- `PAYMENT_GATEWAY_DRIVER=mock` para ambiente local.
+- `ADMIN_REGISTRATION_TOKEN=<token forte para criar admins>`
+- `MPESA_*` podem ficar em branco em desenvolvimento ou com valores sandbox, pois o gateway mock será usado.
+
+4) Criar a base de dados
+-------------------------
+Abra o MySQL via terminal ou cliente gráfico e execute:
+```sql
+CREATE DATABASE txekajobs CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+Certifique-se de que o utilizador definido no `.env` tem permissões de criação e escrita nesta base.
+
+5) Instalar dependências PHP
+----------------------------
+```powershell
+composer install
+php artisan key:generate
+```
+
+6) Migrar e semear dados mínimos
+--------------------------------
+```powershell
+php artisan migrate
+php artisan db:seed --class=DatabaseSeeder  # opcional se existirem seeds
+```
+
+7) Gerar um administrador inicial
+---------------------------------
+Com o token definido no `.env`, faça um pedido HTTP (via Postman, cURL ou PowerShell) para o endpoint protegido:
+```powershell
+curl -X POST http://localhost/api/admin/register `
+  -H "Authorization: Bearer <ADMIN_REGISTRATION_TOKEN>" `
+  -H "Content-Type: application/json" `
+  -d '{
+    "name": "Super Admin",
+    "email": "admin@txekajobs.test",
+    "phone": "+258840000001",
+    "password": "Password123",
+    "password_confirmation": "Password123"
+  }'
+```
+
+8) Preparar filas e scheduler
+-----------------------------
+- Criar a tabela de filas (já incluída na migration principal). Para processar jobs: `php artisan queue:work` numa janela do PowerShell.
+- Para simular o cron do Laravel, crie uma tarefa agendada do Windows que execute `php artisan schedule:run` a cada minuto (Task Scheduler > Create Basic Task > Trigger: Daily, Repeat every 1 minute for 1 day, Action: Start a program -> Program/script: php, Arguments: "artisan schedule:run", Start in: caminho do projecto).
+
+9) Servir a aplicação
+---------------------
+- Com Apache (XAMPP/WAMP), aponte o DocumentRoot para a pasta `public` do projecto. Reinicie Apache e aceda a http://localhost.
+- Em alternativa, pode usar o servidor embutido do Laravel para desenvolvimento rápido:
+```powershell
+php artisan serve
+```
+
+10) Fluxo rápido de validação
+-----------------------------
+- Criar um utilizador cliente via `/register` (se existir o formulário) ou directamente em base de dados.
+- Criar um prestador e associar categorias/zonas.
+- Criar um serviço e submeter proposta para testar o gateway mock e os fluxos de OTP.
+
+11) Tips adicionais para Windows
+--------------------------------
+- Se usar WSL, pode montar o projecto na pasta Linux e aceder ao MySQL/Apache do Windows via `localhost`.
+- Para garantir permissões de escrita nas pastas `storage` e `bootstrap/cache`, execute `icacls storage /grant %USERNAME%:F /t` e `icacls bootstrap\cache /grant %USERNAME%:F /t`.
+- Mantenha o `APP_DEBUG=false` em produção e configure certificados HTTPS quando publicar.
+
+Com estes passos, terá o Txeka Jobs a funcionar num ambiente Windows, com um administrador inicial criado por endpoint seguro e com todas as migrations aplicadas.
