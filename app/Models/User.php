@@ -29,4 +29,14 @@ class User extends Authenticatable
         'phone_verified_at' => 'datetime',
         'last_login_at' => 'datetime',
     ];
+
+    public function deviceSessions()
+    {
+        return $this->hasMany(DeviceSession::class);
+    }
+
+    public function otpTokens()
+    {
+        return $this->hasMany(OtpToken::class);
+    }
 }

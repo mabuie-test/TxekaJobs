@@ -15,3 +15,4 @@ Plataforma de marketplace de serviços para Moçambique baseada em Laravel 11 e 
 - Gateway M-Pesa baseado em [`karson/mpesa-php-sdk`](https://github.com/karson/mpesa-php-sdk) pode ser activado configurando `PAYMENT_GATEWAY_DRIVER=mpesa` e credenciais `MPESA_*` no `.env`. Configure `MPESA_CALLBACK_URL` para apontar para `/api/pagamentos/mpesa/callback` exposto pela aplicação.
 - Serviços de notificação (`SmsService` e `WhatsappService`) guardam mensagens em tabela `notificacoes` para processamento posterior.
 - Máquina de estados de serviços em `App\Services\Servicos\ServicoStateService` valida transições críticas.
+- Autenticação reforçada: login por email/telefone com password, envio de OTP por SMS e marcação de dispositivos confiáveis em `device_sessions` + `otp_tokens`.
