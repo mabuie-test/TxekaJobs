@@ -79,6 +79,14 @@ Para criar mais admins no futuro, reutilize o mesmo token ou altere-o no `.env` 
 - Para simular o cron do Laravel, crie uma tarefa agendada do Windows que execute `php artisan schedule:run` a cada minuto (Task Scheduler > Create Basic Task > Trigger: Daily, Repeat every 1 minute for 1 day, Action: Start a program -> Program/script: php, Arguments: "artisan schedule:run", Start in: caminho do projecto). Este cron dispara o recálculo nocturno `txeka:recalcular-estatisticas` e o matching de prestadores.
 - Execute manualmente o comando de reputação se quiser validar: `php artisan txeka:recalcular-estatisticas` ou `php artisan txeka:recalcular-estatisticas --queued` para enviar para a fila.
 
+10.1) Backups automáticos e recuperação
+---------------------------------------
+- O comando `php artisan txeka:backup-diario` gera um ficheiro `.sql` em `storage/app/backups` usando `mysqldump`. Confirme que o utilitário `mysqldump.exe` está no PATH (vem com a instalação do MySQL).
+- O scheduler já agenda o backup diário às 03:00; verifique que a tarefa do passo 8 está activa para disparar o cron.
+- Para gerar um backup manual, aceda à interface `/admin/backups` autenticado como admin e clique em "Gerar backup agora".
+- Para descarregar um backup existente, use o botão "Download" na mesma página e guarde o ficheiro em local seguro.
+- Para restaurar após falha grave, vá a `/admin/backups`, seleccione o ficheiro `.sql` guardado e envie. O sistema irá aplicar o SQL via `mysql`, substituindo o estado actual da base. Considere colocar a aplicação em modo manutenção (`php artisan down`) antes de restaurar e voltar a subir (`php artisan up`).
+
 9) Servir a aplicação
 ---------------------
 - Com Apache (XAMPP/WAMP), aponte o DocumentRoot para a pasta `public` do projecto. Reinicie Apache e aceda a http://localhost.

@@ -1,6 +1,7 @@
 <?php
 
 use App\Console\Commands\RecalcularEstatisticasPrestadores;
+use App\Console\Commands\BackupDatabaseCommand;
 use App\Providers\AuthServiceProvider;
 use App\Providers\EventServiceProvider;
 use App\Providers\PaymentServiceProvider;
@@ -21,9 +22,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withCommands([
         RecalcularEstatisticasPrestadores::class,
+        BackupDatabaseCommand::class,
     ])
     ->withSchedule(function (Schedule $schedule) {
         $schedule->command('txeka:recalcular-estatisticas')->dailyAt('02:00');
+        $schedule->command('txeka:backup-diario')->dailyAt('03:00');
     })
     ->withMiddleware(function ($middleware) {
         // placeholder for middleware registration

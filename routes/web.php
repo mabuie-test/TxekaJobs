@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\OtpController;
+use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Cliente\ServicoController as ClienteServicoController;
 use App\Http\Controllers\Prestador\PropostaController;
 use Illuminate\Support\Facades\Route;
@@ -31,5 +32,14 @@ Route::middleware('auth')->group(function () {
         Route::get('servicos/{servico}/propostas/{proposta}', function () {
             return view('prestador.propostas.show');
         })->name('propostas.show');
+    });
+
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('backups', [BackupController::class, 'index'])->name('backups.index');
+        Route::post('backups', [BackupController::class, 'store'])->name('backups.store');
+        Route::post('backups/restore', [BackupController::class, 'restore'])->name('backups.restore');
+        Route::get('backups/{filename}', [BackupController::class, 'download'])
+            ->where('filename', 'backup_[0-9]{8}_[0-9]{6}\.sql')
+            ->name('backups.download');
     });
 });

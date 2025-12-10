@@ -20,4 +20,5 @@ Plataforma de marketplace de serviços para Moçambique baseada em Laravel 11 e 
 - Reputação e estatísticas recalculadas por `EstatisticasPrestadorService` via comando `php artisan txeka:recalcular-estatisticas` (agendado às 02:00 pela schedule).
 - Autenticação reforçada: login por email/telefone com password, envio de OTP por SMS e marcação de dispositivos confiáveis em `device_sessions` + `otp_tokens`.
 - Endpoint protegido para criar administradores: `POST /api/admin/register` com header `Authorization: Bearer {ADMIN_REGISTRATION_TOKEN}`; configure `ADMIN_REGISTRATION_TOKEN` no `.env`.
+- Backups: comando `php artisan txeka:backup-diario` gera ficheiros `.sql` em `storage/app/backups` utilizando `mysqldump`; o scheduler corre diariamente às 03:00. Interface web em `/admin/backups` permite gerar, descarregar e importar backups (restrito a administradores).
 - Consulte `guide.txt` para guia passo-a-passo no Windows incluindo criação da base de dados e agendamento de filas.
