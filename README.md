@@ -3,12 +3,12 @@
 Plataforma de marketplace de serviços para Moçambique baseada em Laravel 11 e PHP 8.2+, preparada para alojamento LAMP. O projecto inclui máquina de estados de serviços, monetização (leads, subscrições, reservas), integração M-Pesa e flows completos para clientes, prestadores e administradores.
 
 ## Passos rápidos
-1. Copie `.env.example` para `.env` e configure credenciais MySQL e `ADMIN_REGISTRATION_TOKEN`.
+1. Copie `.env.example` para `.env` e configure credenciais MySQL, `ADMIN_REGISTRATION_TOKEN`, `APP_URL` e gateway (`PAYMENT_GATEWAY_DRIVER=mock|mpesa`).
 2. Instale dependências: `composer install` e gere a chave `php artisan key:generate`.
-3. Crie a base de dados `txekajobs` e execute `php artisan migrate` (ou importe `schema.sql` com `mysql -u user -p txekajobs < schema.sql`).
+3. Crie a base de dados `txekajobs` e execute `php artisan migrate && php artisan storage:link` (ou importe `schema.sql`).
 4. Arranque serviços locais: `php artisan serve`, `php artisan queue:work` e agende `php artisan schedule:run` por cron a cada minuto.
-5. Crie um administrador via `POST /api/admin/register` com header `Authorization: Bearer {ADMIN_REGISTRATION_TOKEN}` e payload de utilizador.
-6. Aceda ao frontend: `/login` (OTP por SMS), `/cliente/servicos` para pedidos, `/prestador/propostas` para propostas e `/admin/backups` para gestão de backups.
+5. Crie um administrador via `POST /api/admin/register` com header `Authorization: Bearer {ADMIN_REGISTRATION_TOKEN}`; o admin receberá email de verificação se tiver email definido.
+6. Aceda ao frontend: `/login` (OTP por SMS), complete o perfil em `/perfil` com foto/currículo e reenvie verificação de email; `/cliente/servicos` para pedidos, `/prestador/propostas` para propostas e `/admin/backups` para backups.
 
 ## Arquitectura em síntese
 - **Domínio**: matching de prestadores, monetização (leads, subscrições, reservas), reputação, litígios e notificações multicanal.
@@ -27,7 +27,7 @@ Plataforma de marketplace de serviços para Moçambique baseada em Laravel 11 e 
 - **Pagamentos**: `App\Services\Payments` com gateways Mock e M-Pesa; callbacks em `/api/pagamentos/mpesa/callback`.
 
 ## Documentação detalhada
-- `guide.txt`: passo-a-passo completo para Windows (instalação, base de dados, cron, filas e bootstrap de admin).
+- `guide.txt` e `final.txt`: passo-a-passo completo para Windows (instalação, base de dados, cron, filas, bootstrap de admin e resolução rápida).
 - `docs/ARCHITECTURE_AND_OPERATIONS.md`: visão abrangente de modelos, fluxos de pagamento, máquina de estados, operação diária, troubleshooting e segurança.
 - `schema.sql`: DDL completo espelhando as migrations para importação directa em MySQL.
 

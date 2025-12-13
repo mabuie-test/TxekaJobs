@@ -62,7 +62,10 @@ php artisan key:generate
 ```powershell
 php artisan migrate
 php artisan db:seed --class=DatabaseSeeder  # opcional se existirem seeds
+php artisan storage:link                    # necessário para fotos de perfil e currículos
 ```
+
+Se criar utilizadores com email, eles receberão links de verificação; pode reenviar via `/email/verify` ou pelo ecrã de perfil `/perfil`.
 
 7) Gerar um administrador inicial
 ---------------------------------

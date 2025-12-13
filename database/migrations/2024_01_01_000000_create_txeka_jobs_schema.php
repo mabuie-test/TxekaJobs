@@ -14,6 +14,8 @@ return new class extends Migration
             $table->string('email')->nullable()->unique();
             $table->string('phone')->unique();
             $table->string('password');
+            $table->string('profile_photo_path')->nullable();
+            $table->string('curriculum_path')->nullable();
             $table->enum('tipo_perfil', ['cliente', 'prestador', 'admin'])->index();
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('phone_verified_at')->nullable();

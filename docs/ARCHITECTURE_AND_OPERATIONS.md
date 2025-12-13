@@ -27,6 +27,7 @@ Este documento descreve a arquitectura completa, fluxos críticos, operações d
 - **Admin bootstrap**: endpoint protegido `POST /api/admin/register` com header `Authorization: Bearer {ADMIN_REGISTRATION_TOKEN}`.
 - **Policies**: `ServicoPolicy` garante que clientes só acedem aos próprios pedidos e prestadores apenas a serviços relacionados.
 - **Protecção de callbacks**: `MpesaCallbackController` é idempotente, grava metadados e bloqueia regressões de estado.
+- **Pós-registo**: utilizadores recebem link de verificação de email; o ecrã `/perfil` permite reenviar o link, trocar contacto, anexar foto de perfil e currículo (armazenados em `storage/app/public`).
 
 ## 4. Monetização e pagamentos
 - **Leads**: `LeadPaymentService` consome `leads_restantes` de subscrição; se esgotados, cria pagamento `lead` (estado `pendente`) e chama gateway.

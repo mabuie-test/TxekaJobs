@@ -5,6 +5,9 @@ use App\Http\Controllers\Auth\OtpController;
 use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Cliente\ServicoController as ClienteServicoController;
 use App\Http\Controllers\Prestador\PropostaController;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -18,7 +21,28 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/otp', [OtpController::class, 'show'])->name('otp.show');
 Route::post('/otp', [OtpController::class, 'verify'])->name('otp.verify');
 
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+
+    return redirect()->route('home')->with('status', 'Email verificado com sucesso.');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+
+    return back()->with('status', 'verification-link-sent');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
 Route::middleware('auth')->group(function () {
+    Route::get('/perfil', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/perfil', [ProfileController::class, 'update'])->name('profile.update');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('cliente')->name('cliente.')->group(function () {
         Route::get('servicos', [ClienteServicoController::class, 'index'])->name('servicos.index');
         Route::get('servicos/criar', [ClienteServicoController::class, 'create'])->name('servicos.create');

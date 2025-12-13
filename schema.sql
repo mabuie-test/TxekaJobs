@@ -37,6 +37,8 @@ CREATE TABLE `users` (
   `email` varchar(255) DEFAULT NULL,
   `phone` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `profile_photo_path` varchar(255) DEFAULT NULL,
+  `curriculum_path` varchar(255) DEFAULT NULL,
   `tipo_perfil` enum('cliente','prestador','admin') NOT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
   `phone_verified_at` timestamp NULL DEFAULT NULL,

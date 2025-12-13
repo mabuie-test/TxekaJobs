@@ -10,7 +10,7 @@ class AdminRegistrationService
 {
     public function registerAdmin(array $data): User
     {
-        return DB::transaction(function () use ($data) {
+        $admin = DB::transaction(function () use ($data) {
             return User::create([
                 'name' => $data['name'],
                 'email' => $data['email'] ?? null,
@@ -20,5 +20,11 @@ class AdminRegistrationService
                 'status' => 'activo',
             ]);
         });
+
+        if ($admin->email && ! $admin->hasVerifiedEmail()) {
+            $admin->sendEmailVerificationNotification();
+        }
+
+        return $admin;
     }
 }

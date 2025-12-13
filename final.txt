@@ -1,0 +1,84 @@
+TXEKA JOBS – ARRANQUE NO WINDOWS (PASSO A PASSO)
+=================================================
+
+Pré‑requisitos
+- Instalar PHP 8.2+ (recomendado via https://windows.php.net) e garantir que php.exe está no PATH.
+- Instalar Composer (https://getcomposer.org/download/).
+- Instalar MySQL 8.x ou MariaDB 10.5+ e criar um utilizador com permissões de criação.
+- Instalar Git para obter o código.
+- Activar as extensões php_intl, php_mbstring, php_openssl, php_pdo_mysql, php_zip.
+- Facultativo: instalar Node.js 18+ apenas se quiser recompilar assets (não obrigatório para o bootstrap actual com Bootstrap + Blade).
+
+1) Obter o código
+```bash
+git clone https://seu-repositorio/txekajobs.git
+cd txekajobs
+```
+
+2) Instalar dependências PHP
+```bash
+composer install
+```
+Se aparecer erro de memória no Windows, adicione `-d memory_limit=1G` ao comando PHP.
+
+3) Preparar o ficheiro .env
+- Copie `.env.example` para `.env`.
+- Ajuste as credenciais de base de dados (DB_HOST, DB_PORT, DB_DATABASE, DB_USERNAME, DB_PASSWORD).
+- Defina APP_URL com o domínio ou `http://localhost`.
+- Configure a chave ADMIN_REGISTRATION_TOKEN para criar o primeiro admin via API.
+- Configure as credenciais de M-Pesa (MPESA_ENV, MPESA_CONSUMER_KEY, MPESA_CONSUMER_SECRET, etc.) ou use MOCK para testes.
+
+4) Criar a base de dados
+- No MySQL Workbench ou via terminal:
+```sql
+CREATE DATABASE txekajobs CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+- Garanta permissões para o utilizador definido no .env.
+
+5) Gerar chave e migrar
+```bash
+php artisan key:generate
+php artisan migrate --seed
+```
+Se não conseguir correr migrations no ambiente alvo, pode importar `schema.sql` directamente no MySQL e depois executar `php artisan db:seed`.
+
+6) Ligar storage público
+```bash
+php artisan storage:link
+```
+Isto permite servir fotos de perfil e currículos enviados pelos utilizadores.
+
+7) Configurar filas e scheduler
+- Criar a tabela de filas (já incluída na migração) e correr o worker:
+```bash
+php artisan queue:work --tries=3
+```
+- No Agendador do Windows (Task Scheduler), configure uma tarefa a cada minuto com o comando:
+```bash
+php artisan schedule:run
+```
+
+8) Servir a aplicação (Apache ou built-in)
+- Para desenvolvimento rápido:
+```bash
+php artisan serve --host=0.0.0.0 --port=8000
+```
+- Em Apache (XAMPP/WAMP), aponte o DocumentRoot para `public/` e garanta que o mod_rewrite está activo. O ficheiro `public/.htaccess` já trata do roteamento.
+
+9) Criar o primeiro administrador
+```bash
+curl -X POST http://localhost:8000/api/admin/register \
+  -H "Authorization: Bearer $ADMIN_REGISTRATION_TOKEN" \
+  -d "name=Admin" -d "email=admin@example.com" -d "phone=25884xxxxxxx" -d "password=secret123"
+```
+O admin receberá email de verificação (se configurado) e poderá aceder ao backoffice.
+
+10) Testar fluxos rápidos
+- Aceda a http://localhost:8000 e autentique-se.
+- Complete o perfil em /perfil, envie foto e currículo, e verifique o email através do link recebido.
+- Crie um pedido de serviço (cliente) e envie uma proposta (prestador) para validar a cobrança de leads em modo mock ou M-Pesa.
+
+Resolução de problemas rápidos
+- Erros de permissão ao guardar ficheiros: verifique `storage/` e `bootstrap/cache` com permissões de escrita.
+- Callbacks M-Pesa: confirme que a rota `/api/pagamentos/mpesa/callback` está acessível externamente ou use túnel (ngrok) em desenvolvimento.
+- Emails: configure MAIL_MAILER=log para desenvolvimento e veja `storage/logs/laravel.log` para os links de verificação.
