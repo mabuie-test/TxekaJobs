@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Services\Auth\OtpService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,10 +12,6 @@ use Illuminate\View\View;
 
 class LoginController extends Controller
 {
-    public function __construct(private OtpService $otpService)
-    {
-    }
-
     public function showLoginForm(): View
     {
         return view('auth.login');
@@ -38,18 +33,14 @@ class LoginController extends Controller
             return back()->withErrors(['login' => 'Credenciais inválidas ou conta suspensa.'])->withInput();
         }
 
-        $fingerprint = $this->otpService->generateFingerprint(
-            $request->input('device_fingerprint'),
-            $request->userAgent(),
-            $request->ip()
-        );
+        Auth::login($user, true);
+        $request->session()->regenerate();
 
-        $this->otpService->issue($user, $fingerprint, $request->userAgent(), $request->ip());
+        if (! $user->hasVerifiedEmail()) {
+            return redirect()->route('verification.notice')->with('status', 'Confirme o email para continuar.');
+        }
 
-        $request->session()->put('pending_user_id', $user->id);
-        $request->session()->put('pending_device_fingerprint', $fingerprint);
-
-        return redirect()->route('otp.show')->with('status', 'Código OTP enviado por SMS.');
+        return redirect()->to($this->routeForPerfil($user->tipo_perfil));
     }
 
     public function logout(Request $request): RedirectResponse
@@ -59,5 +50,15 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login')->with('status', 'Sessão terminada.');
+    }
+
+    private function routeForPerfil(string $perfil): string
+    {
+        return match ($perfil) {
+            'cliente' => route('cliente.servicos.index'),
+            'prestador' => route('prestador.dashboard'),
+            'admin' => route('admin.backups.index'),
+            default => route('home'),
+        };
     }
 }

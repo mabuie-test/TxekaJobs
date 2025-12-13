@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->nullable()->unique();
+            $table->string('email')->unique();
             $table->string('phone')->unique();
             $table->string('password');
             $table->string('profile_photo_path')->nullable();
@@ -30,7 +30,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('morada_principal')->nullable();
-            $table->string('cidade')->nullable();
+            $table->string('cidade');
             $table->string('bairro_principal')->nullable();
             $table->text('referencia_localizacao_texto')->nullable();
             $table->decimal('latitude', 10, 7)->nullable();
@@ -47,10 +47,10 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->text('bio')->nullable();
             $table->string('documento_identificacao')->nullable();
-            $table->string('tipo_documento')->nullable();
-            $table->string('numero_documento')->nullable();
+            $table->enum('tipo_documento', ['bilhete_identidade', 'passaporte', 'dire', 'carta_conducao']);
+            $table->string('numero_documento');
             $table->enum('tipo_carteira', ['mpesa', 'mkesh', 'emola', 'outro'])->default('mpesa');
-            $table->string('numero_carteira')->nullable();
+            $table->string('numero_carteira');
             $table->enum('estado_verificacao', ['pendente', 'verificado', 'rejeitado'])->default('pendente');
             $table->timestamp('data_verificacao')->nullable();
             $table->unsignedInteger('total_servicos_concluidos')->default(0);

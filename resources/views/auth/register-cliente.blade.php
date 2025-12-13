@@ -17,8 +17,8 @@
                             @error('name')<div class="text-danger small">{{ $message }}</div>@enderror
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Email (opcional)</label>
-                            <input type="email" name="email" class="form-control" value="{{ old('email') }}">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" value="{{ old('email') }}" required>
                             @error('email')<div class="text-danger small">{{ $message }}</div>@enderror
                         </div>
                         <div class="mb-3">
@@ -37,7 +37,12 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Cidade</label>
-                            <input type="text" name="cidade" class="form-control" value="{{ old('cidade') }}">
+                            <select name="cidade" class="form-select" required>
+                                <option value="">Selecione...</option>
+                                @foreach(($cities ?? []) as $city)
+                                    <option value="{{ $city }}" @selected(old('cidade') === $city)>{{ $city }}</option>
+                                @endforeach
+                            </select>
                             @error('cidade')<div class="text-danger small">{{ $message }}</div>@enderror
                         </div>
                         <div class="mb-3">

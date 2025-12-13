@@ -15,14 +15,16 @@ class StorePrestadorRegistrationRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['nullable', 'email', 'max:255', 'unique:users,email'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'phone' => ['required', 'string', 'max:30', 'unique:users,phone'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'bio' => ['nullable', 'string', 'max:500'],
-            'tipo_documento' => ['nullable', 'string', 'max:50'],
-            'numero_documento' => ['nullable', 'string', 'max:120'],
-            'tipo_carteira' => ['nullable', 'in:mpesa,mkesh,emola,outro'],
-            'numero_carteira' => ['nullable', 'string', 'max:50'],
+            'tipo_documento' => ['required', 'in:bilhete_identidade,passaporte,dire,carta_conducao'],
+            'numero_documento' => ['required', 'string', 'max:120'],
+            'tipo_carteira' => ['required', 'in:mpesa,mkesh,emola,outro'],
+            'numero_carteira' => ['required', 'string', 'max:50'],
+            'cidade' => ['required', 'string', 'max:120'],
+            'bairro_principal' => ['nullable', 'string', 'max:120'],
             'aceita_servicos_urgentes' => ['sometimes', 'boolean'],
         ];
     }

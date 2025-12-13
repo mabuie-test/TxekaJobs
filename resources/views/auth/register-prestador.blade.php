@@ -23,8 +23,8 @@
                                 @error('phone')<div class="text-danger small">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Email (opcional)</label>
-                                <input type="email" name="email" class="form-control" value="{{ old('email') }}">
+                                <label class="form-label">Email</label>
+                                <input type="email" name="email" class="form-control" value="{{ old('email') }}" required>
                                 @error('email')<div class="text-danger small">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-6">
@@ -42,13 +42,33 @@
                                 @error('bio')<div class="text-danger small">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-6">
+                                <label class="form-label">Cidade</label>
+                                <select name="cidade" class="form-select" required>
+                                    <option value="">Selecione...</option>
+                                    @foreach(($cities ?? []) as $city)
+                                        <option value="{{ $city }}" @selected(old('cidade') === $city)>{{ $city }}</option>
+                                    @endforeach
+                                </select>
+                                @error('cidade')<div class="text-danger small">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Bairro</label>
+                                <input type="text" name="bairro_principal" class="form-control" value="{{ old('bairro_principal') }}">
+                                @error('bairro_principal')<div class="text-danger small">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-6">
                                 <label class="form-label">Tipo de Documento</label>
-                                <input type="text" name="tipo_documento" class="form-control" value="{{ old('tipo_documento') }}">
+                                <select name="tipo_documento" class="form-select" required>
+                                    <option value="">Selecione...</option>
+                                    @foreach(($documentTypes ?? []) as $key => $label)
+                                        <option value="{{ $key }}" @selected(old('tipo_documento') === $key)>{{ $label }}</option>
+                                    @endforeach
+                                </select>
                                 @error('tipo_documento')<div class="text-danger small">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Número do Documento</label>
-                                <input type="text" name="numero_documento" class="form-control" value="{{ old('numero_documento') }}">
+                                <input type="text" name="numero_documento" class="form-control" value="{{ old('numero_documento') }}" required>
                                 @error('numero_documento')<div class="text-danger small">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-6">

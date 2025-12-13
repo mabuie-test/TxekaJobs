@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" role="img" aria-label="Txeka Jobs logo">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0f766e"/>
+      <stop offset="100%" stop-color="#22c55e"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="240" height="60" rx="12" fill="#0b1724"/>
+  <path d="M25 15 L40 45 L10 45 Z" fill="url(#grad)" opacity="0.9"/>
+  <text x="70" y="37" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-weight="700" font-size="26" fill="#e2f3ff">Txeka</text>
+  <text x="150" y="37" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-weight="600" font-size="22" fill="#22c55e">Jobs</text>
+</svg>

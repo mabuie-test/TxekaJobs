@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\OtpController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Cliente\ServicoController as ClienteServicoController;
@@ -23,9 +22,6 @@ Route::get('/registar/cliente', [RegisterController::class, 'showClienteForm'])-
 Route::post('/registar/cliente', [RegisterController::class, 'storeCliente'])->name('register.cliente.store');
 Route::get('/registar/prestador', [RegisterController::class, 'showPrestadorForm'])->name('register.prestador');
 Route::post('/registar/prestador', [RegisterController::class, 'storePrestador'])->name('register.prestador.store');
-
-Route::get('/otp', [OtpController::class, 'show'])->name('otp.show');
-Route::post('/otp', [OtpController::class, 'verify'])->name('otp.verify');
 
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
@@ -57,6 +53,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::prefix('prestador')->name('prestador.')->group(function () {
+        Route::view('dashboard', 'prestador.dashboard')->name('dashboard');
         Route::get('servicos/{servico}/propostas/criar', [PropostaController::class, 'create'])->name('propostas.create');
         Route::post('servicos/{servico}/propostas', [PropostaController::class, 'store'])->name('propostas.store');
         Route::get('servicos/{servico}/propostas/{proposta}', function () {

@@ -27,6 +27,8 @@ class Prestador extends Model
         'rating_medio_cacheado',
         'esta_disponivel',
         'aceita_servicos_urgentes',
+        'cidade',
+        'bairro_principal',
     ];
 
     protected $casts = [

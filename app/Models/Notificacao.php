@@ -9,6 +9,12 @@ class Notificacao extends Model
 {
     use HasFactory;
 
+    /**
+     * Laravel pluraliza "notificacao" como "notificacaos" por padrão; aqui fixamos
+     * explicitamente para corresponder à tabela criada na migração.
+     */
+    protected $table = 'notificacoes';
+
     protected $fillable = [
         'user_id',
         'canal',

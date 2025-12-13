@@ -6,7 +6,7 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title mb-3">Login seguro</h5>
-                    <p class="text-muted">Autentique-se com email ou telefone e receba um OTP por SMS.</p>
+                    <p class="text-muted">Autentique-se com email obrigatório e confirme o endereço para aceder ao sistema.</p>
                     <form method="POST" action="{{ route('login.post') }}">
                         @csrf
                         <div class="mb-3">
@@ -17,7 +17,6 @@
                             <label class="form-label">Password</label>
                             <input type="password" name="password" class="form-control" required>
                         </div>
-                        <input type="hidden" name="device_fingerprint" value="">
                         <button type="submit" class="btn btn-primary w-100">Continuar</button>
                     </form>
                     <hr class="my-3">

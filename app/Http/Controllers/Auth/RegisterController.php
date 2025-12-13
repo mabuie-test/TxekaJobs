@@ -18,12 +18,22 @@ class RegisterController extends Controller
 {
     public function showClienteForm(): View
     {
-        return view('auth.register-cliente');
+        return view('auth.register-cliente', [
+            'cities' => config('cities.mozambique_cities'),
+        ]);
     }
 
     public function showPrestadorForm(): View
     {
-        return view('auth.register-prestador');
+        return view('auth.register-prestador', [
+            'cities' => config('cities.mozambique_cities'),
+            'documentTypes' => [
+                'bilhete_identidade' => 'Bilhete de Identidade',
+                'passaporte' => 'Passaporte',
+                'dire' => 'DIRE',
+                'carta_conducao' => 'Carta de Condução',
+            ],
+        ]);
     }
 
     public function storeCliente(StoreClienteRegistrationRequest $request): RedirectResponse
@@ -44,7 +54,7 @@ class RegisterController extends Controller
             Cliente::create([
                 'user_id' => $user->id,
                 'morada_principal' => $data['morada_principal'] ?? null,
-                'cidade' => $data['cidade'] ?? null,
+                'cidade' => $data['cidade'],
                 'bairro_principal' => $data['bairro_principal'] ?? null,
                 'referencia_localizacao_texto' => $data['referencia_localizacao_texto'] ?? null,
             ]);
@@ -76,13 +86,15 @@ class RegisterController extends Controller
             Prestador::create([
                 'user_id' => $user->id,
                 'bio' => $data['bio'] ?? null,
-                'tipo_documento' => $data['tipo_documento'] ?? null,
-                'numero_documento' => $data['numero_documento'] ?? null,
-                'tipo_carteira' => $data['tipo_carteira'] ?? 'mpesa',
-                'numero_carteira' => $data['numero_carteira'] ?? null,
+                'tipo_documento' => $data['tipo_documento'],
+                'numero_documento' => $data['numero_documento'],
+                'tipo_carteira' => $data['tipo_carteira'],
+                'numero_carteira' => $data['numero_carteira'],
                 'estado_verificacao' => 'pendente',
                 'esta_disponivel' => true,
                 'aceita_servicos_urgentes' => $data['aceita_servicos_urgentes'] ?? false,
+                'cidade' => $data['cidade'],
+                'bairro_principal' => $data['bairro_principal'] ?? null,
             ]);
 
             return $user;
