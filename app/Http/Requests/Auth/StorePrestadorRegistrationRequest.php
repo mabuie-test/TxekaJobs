@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StorePrestadorRegistrationRequest extends FormRequest
 {
@@ -23,7 +24,7 @@ class StorePrestadorRegistrationRequest extends FormRequest
             'numero_documento' => ['required', 'string', 'max:120'],
             'tipo_carteira' => ['required', 'in:mpesa,mkesh,emola,outro'],
             'numero_carteira' => ['required', 'string', 'max:50'],
-            'cidade' => ['required', 'string', 'max:120'],
+            'cidade' => ['required', 'string', 'max:120', Rule::in(config('cities.mozambique_cities'))],
             'bairro_principal' => ['nullable', 'string', 'max:120'],
             'aceita_servicos_urgentes' => ['sometimes', 'boolean'],
         ];

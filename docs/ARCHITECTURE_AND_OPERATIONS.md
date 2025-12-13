@@ -17,13 +17,12 @@ Este documento descreve a arquitectura completa, fluxos críticos, operações d
 - **Subscrições** e **planos**: controlam `leads_restantes`, prioridade de ranking e benefícios.
 - **Avaliacoes / EstatisticasPrestador**: reputação agregada, alimentada por eventos e jobs agendados.
 - **Litigios**: controlam bloqueio/libertação de fundos e decisões administrativas.
-- **Notificacoes**: SMS/WhatsApp/email/push em filas, usadas para OTP, estados de serviço e comunicações.
+- **Notificacoes**: SMS/WhatsApp/email/push em filas, usadas para estados de serviço e comunicações.
 - **Mensagens de serviço**: chat simples por serviço com polling.
 - **Logs e parâmetros**: `logs_actividade`, `parametros_sistema` e `falhas_integracao_pagamentos` dão suporte a auditoria e configuração runtime.
 
 ## 3. Fluxos de autenticação e segurança
-- Login por email **ou** telefone + password, seguido de OTP por SMS (serviço `SmsService`) salvo em `otp_tokens`.
-- **Device fingerprint**: guardado em `device_sessions`; dispositivos confiáveis recebem menos pedidos de OTP.
+- Login por email **ou** telefone + password com verificação de email. `device_sessions` regista fingerprints para auditoria e detecção de dispositivos confiáveis.
 - **Admin bootstrap**: endpoint protegido `POST /api/admin/register` com header `Authorization: Bearer {ADMIN_REGISTRATION_TOKEN}`.
 - **Policies**: `ServicoPolicy` garante que clientes só acedem aos próprios pedidos e prestadores apenas a serviços relacionados.
 - **Protecção de callbacks**: `MpesaCallbackController` é idempotente, grava metadados e bloqueia regressões de estado.
@@ -98,7 +97,7 @@ Este documento descreve a arquitectura completa, fluxos críticos, operações d
 ## 14. Troubleshooting
 - **Filas não processam**: ver tabela `jobs`/`failed_jobs`; correr `php artisan queue:retry all`.
 - **Callback M-Pesa não actualiza**: verificar logs de `MpesaCallbackController` e tabela `pagamentos` (estado deve ficar `confirmado`). Repetir callback é seguro (idempotente).
-- **OTP não recebido**: confirmar registos em `notificacoes`; em dev, OTP é gravado para debug. Ajustar validade em `OtpService` se necessário.
+- **Email de verificação**: se não chegar em dev/Windows, use `MAIL_MAILER=log` (ver `.env.example`) e consulte `storage/logs/laravel.log`.
 - **Backup falhou**: confirmar `mysqldump` no PATH e permissões de escrita em `storage/app/backups`.
 
 ## 15. Deployment rápido

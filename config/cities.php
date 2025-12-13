@@ -2,11 +2,13 @@
 
 return [
     'mozambique_cities' => [
-        'Maputo', 'Matola', 'Beira', 'Nampula', 'Quelimane', 'Tete', 'Chimoio', 'Pemba', 'Inhambane',
-        'Xai-Xai', 'Maxixe', 'Lichinga', 'Gurué', 'Cuamba', 'Montepuez', 'Angoche', 'Dondo', 'Nacala',
-        'Mocuba', 'Manica', 'Vilankulos', 'Massinga', 'Macia', 'Moatize', 'Namaacha', 'Mandlakazi',
-        'Mocímboa da Praia', 'Chokwé', 'Bilene', 'Pebane', 'Mueda', 'Marracuene', 'Boane', 'Magude',
-        'Búzi', 'Gorongosa', 'Marromeu', 'Mutarara', 'Nhamatanda', 'Caia', 'Quelimane Porto', 'Chibuto',
-        'Cidade da Beira', 'Marrupa', 'Chiúre', 'Monapo', 'Balama', 'Ribaue', 'Erati', 'Nacaroa'
+        'Maputo', 'Matola', 'Boane', 'Marracuene', 'Namaacha', 'Magude', 'Xai-Xai', 'Bilene', 'Chokwé',
+        'Macia', 'Manjacaze', 'Mandlakazi', 'Chibuto', 'Beira', 'Dondo', 'Nhamatanda', 'Búzi', 'Gorongosa',
+        'Marromeu', 'Mutarara', 'Caia', 'Quelimane', 'Mocuba', 'Gurué', 'Pebane', 'Nampula', 'Nacala',
+        'Monapo', 'Angoche', 'Ribaue', 'Erati', 'Nacaroa', 'Nampula Rapale', 'Pemba', 'Chiúre', 'Mueda',
+        'Montepuez', 'Balama', 'Mocímboa da Praia', 'Lichinga', 'Cuamba', 'Mandimba', 'Marrupa', 'Metangula',
+        'Massinga', 'Inhambane', 'Maxixe', 'Vilankulos', 'Inharrime', 'Macia Praia', 'Moatize', 'Tete',
+        'Moçambique Malema', 'Angónia', 'Manica', 'Chimoio', 'Gondola', 'Sussundenga', 'Catandica',
+        'Marínguè', 'Mutasa', 'Lichinga Ngaúma', 'Matola Rio', 'Quelimane Porto'
     ],
 ];

@@ -44,7 +44,7 @@ class RegisterController extends Controller
             /** @var User $user */
             $user = User::create([
                 'name' => $data['name'],
-                'email' => $data['email'] ?? null,
+                'email' => $data['email'],
                 'phone' => $data['phone'],
                 'password' => Hash::make($data['password']),
                 'tipo_perfil' => 'cliente',
@@ -76,7 +76,7 @@ class RegisterController extends Controller
             /** @var User $user */
             $user = User::create([
                 'name' => $data['name'],
-                'email' => $data['email'] ?? null,
+                'email' => $data['email'],
                 'phone' => $data['phone'],
                 'password' => Hash::make($data['password']),
                 'tipo_perfil' => 'prestador',

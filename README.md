@@ -8,19 +8,19 @@ Plataforma de marketplace de serviços para Moçambique baseada em Laravel 11 e 
 3. Crie a base de dados `txekajobs` e execute `php artisan migrate && php artisan storage:link` (ou importe `schema.sql`).
 4. Arranque serviços locais: `php artisan serve`, `php artisan queue:work` e agende `php artisan schedule:run` por cron a cada minuto.
 5. Crie um administrador via `POST /api/admin/register` com header `Authorization: Bearer {ADMIN_REGISTRATION_TOKEN}`; o admin receberá email de verificação se tiver email definido.
-6. Aceda ao frontend: crie conta em `/registar/cliente` ou `/registar/prestador`, valide email e OTP; complete o perfil em `/perfil` com foto/currículo; `/cliente/servicos` para pedidos, `/prestador/propostas` para propostas e `/admin/backups` para backups.
+6. Aceda ao frontend: crie conta em `/registar/cliente` ou `/registar/prestador` e valide o email; complete o perfil em `/perfil` com foto/currículo; `/cliente/servicos` para pedidos, `/prestador/propostas` para propostas e `/admin/backups` para backups.
 
 ## Arquitectura em síntese
 - **Domínio**: matching de prestadores, monetização (leads, subscrições, reservas), reputação, litígios e notificações multicanal.
 - **Pagamentos**: driver configurável (`mock` ou `mpesa`), callbacks idempotentes em `/api/pagamentos/mpesa/callback`, ledger único em `pagamentos` com metadados JSON.
-- **Segurança**: login por email/telefone + password + OTP SMS; dispositivos confiáveis em `device_sessions`; policies para serviços; endpoint de admin protegido por token.
+- **Segurança**: login por email/telefone + password com verificação de email; dispositivos confiáveis em `device_sessions`; policies para serviços; endpoint de admin protegido por token.
 - **Estados de serviço**: `App\Services\Servicos\ServicoStateService` com eventos `ServicoCriado/Contratado/Concluido` e jobs de matching.
 - **Ranking/Reputação**: `PrestadorRankingService` e `EstatisticasPrestadorService` alimentados por avaliações e histórico de litígios.
 - **Filas/cron**: driver database; `schedule:run` dispara matching, recálculo e backup diário (`txeka:backup-diario`).
 - **PWA**: manifesto e service worker em `public/manifest.json` e `public/service-worker.js` para cache de assets estáticos.
 
 ## Componentes e rotas chave
-- **Autenticação**: `/login`, `/otp`, serviços `OtpService` e modelos `OtpToken`/`DeviceSession`.
+- **Autenticação**: `/login`, verificação de email e modelos `DeviceSession`.
 - **Clientes**: `/cliente/servicos` (listar/criar), `/cliente/servicos/{id}` (detalhes, propostas, timeline). Matching é enfileirado via eventos de serviço.
 - **Prestadores**: `/prestador/propostas` (listar) e `/prestador/propostas/create` (enviar proposta) com monetização de lead (`LeadPaymentService`).
 - **Admin**: `/admin/backups` (gerar, descarregar, restaurar) e API `/api/admin/register` para bootstrap seguro.
@@ -36,6 +36,7 @@ Plataforma de marketplace de serviços para Moçambique baseada em Laravel 11 e 
 - Backup diário em `storage/app/backups` via comando `txeka:backup-diario` (agenda às 03:00); interface `/admin/backups` permite download/restauro.
 - Para produção, configure `PAYMENT_GATEWAY_DRIVER=mpesa` e variáveis `MPESA_*`; mantenha `mock` em desenvolvimento.
 - Em caso de recuperação, importe `schema.sql` e aplique o backup mais recente.
+- Se `package:discover` falhar pedindo `bootstrap/cache`, crie `bootstrap/cache` e `storage/framework/{cache/data,sessions,views}` e volte a correr `composer dump-autoload`.
 - Se durante `composer install` aparecer "Target [Illuminate\\Contracts\\Debug\\ExceptionHandler] is not instantiable", confirme que o repositório foi extraído por completo (incluindo `app/Exceptions/Handler.php`) e limpe caches com `php artisan config:clear`.
 
 ## Testes

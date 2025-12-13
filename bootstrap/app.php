@@ -2,6 +2,7 @@
 
 use App\Console\Commands\RecalcularEstatisticasPrestadores;
 use App\Console\Commands\BackupDatabaseCommand;
+use App\Console\Commands\CalcularTendenciasCommand;
 use App\Providers\AuthServiceProvider;
 use App\Providers\EventServiceProvider;
 use App\Providers\PaymentServiceProvider;
@@ -34,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withCommands([
         RecalcularEstatisticasPrestadores::class,
         BackupDatabaseCommand::class,
+        CalcularTendenciasCommand::class,
     ])
     ->withSchedule(function (Schedule $schedule) {
         $schedule->command('txeka:recalcular-estatisticas')->dailyAt('02:00');

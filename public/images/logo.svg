@@ -1,12 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" role="img" aria-label="Txeka Jobs logo">
-  <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#0f766e"/>
-      <stop offset="100%" stop-color="#22c55e"/>
-    </linearGradient>
-  </defs>
-  <rect x="0" y="0" width="240" height="60" rx="12" fill="#0b1724"/>
-  <path d="M25 15 L40 45 L10 45 Z" fill="url(#grad)" opacity="0.9"/>
-  <text x="70" y="37" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-weight="700" font-size="26" fill="#e2f3ff">Txeka</text>
-  <text x="150" y="37" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-weight="600" font-size="22" fill="#22c55e">Jobs</text>
+<svg width="180" height="56" viewBox="0 0 180 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <linearGradient id="grad" x1="0" y1="0" x2="180" y2="0" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#2563EB"/>
+    <stop offset="1" stop-color="#F97316"/>
+  </linearGradient>
+</defs>
+<rect x="2" y="2" width="176" height="52" rx="14" fill="url(#grad)" opacity="0.08"/>
+<circle cx="34" cy="28" r="16" fill="url(#grad)"/>
+<path d="M29 28.5L33 33L41 23" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="62" y="33" fill="#0F172A" font-family="'Inter', sans-serif" font-size="20" font-weight="700">Txeka Jobs</text>
+<text x="62" y="46" fill="#1F2937" font-family="'Inter', sans-serif" font-size="10" font-weight="500">Serviços confiáveis em Moçambique</text>
 </svg>

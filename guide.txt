@@ -113,7 +113,7 @@ php artisan serve
 -----------------------------
 - Criar um utilizador cliente via `/register` (se existir o formulário) ou directamente em base de dados.
 - Criar um prestador e associar categorias/zonas.
-- Criar um serviço e submeter proposta para testar o gateway mock e os fluxos de OTP.
+- Criar um serviço e submeter proposta para testar o gateway mock (sem OTP, apenas verificação de email).
 - Testar o callback M-Pesa mock: enviar `POST` para `/api/pagamentos/mpesa/callback` com payload de exemplo (ver testes em `tests/Feature/Payments/MpesaCallbackControllerTest.php`) e confirmar mudança de estado de pagamento para `confirmado`.
 - Gerar um backup e restaurar num schema limpo para validar o processo de recuperação.
 
