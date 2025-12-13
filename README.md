@@ -36,6 +36,7 @@ Plataforma de marketplace de serviços para Moçambique baseada em Laravel 11 e 
 - Backup diário em `storage/app/backups` via comando `txeka:backup-diario` (agenda às 03:00); interface `/admin/backups` permite download/restauro.
 - Para produção, configure `PAYMENT_GATEWAY_DRIVER=mpesa` e variáveis `MPESA_*`; mantenha `mock` em desenvolvimento.
 - Em caso de recuperação, importe `schema.sql` e aplique o backup mais recente.
+- Se durante `composer install` aparecer "Target [Illuminate\\Contracts\\Debug\\ExceptionHandler] is not instantiable", confirme que o repositório foi extraído por completo (incluindo `app/Exceptions/Handler.php`) e limpe caches com `php artisan config:clear`.
 
 ## Testes
 - Unit: `OtpServiceTest`, `LeadPaymentServiceTest`, `ServicoStateServiceTest`, `MpesaPaymentGatewayTest`, `DatabaseBackupServiceTest`.

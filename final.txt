@@ -82,3 +82,5 @@ Resolução de problemas rápidos
 - Erros de permissão ao guardar ficheiros: verifique `storage/` e `bootstrap/cache` com permissões de escrita.
 - Callbacks M-Pesa: confirme que a rota `/api/pagamentos/mpesa/callback` está acessível externamente ou use túnel (ngrok) em desenvolvimento.
 - Emails: configure MAIL_MAILER=log para desenvolvimento e veja `storage/logs/laravel.log` para os links de verificação.
+- "Target [Illuminate\\Contracts\\Debug\\ExceptionHandler] is not instantiable": garanta que o repositório foi extraído por
+  completo (inclui `app/Exceptions/Handler.php`) e limpe caches com `php artisan config:clear` antes de repetir `composer install`.
