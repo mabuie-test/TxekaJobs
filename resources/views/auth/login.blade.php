@@ -20,6 +20,11 @@
                         <input type="hidden" name="device_fingerprint" value="">
                         <button type="submit" class="btn btn-primary w-100">Continuar</button>
                     </form>
+                    <hr class="my-3">
+                    <div class="d-grid gap-2">
+                        <a href="{{ route('register.cliente') }}" class="btn btn-outline-secondary">Quero criar conta de cliente</a>
+                        <a href="{{ route('register.prestador') }}" class="btn btn-outline-success">Quero ser prestador</a>
+                    </div>
                 </div>
             </div>
         </div>

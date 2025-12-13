@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\OtpController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Cliente\ServicoController as ClienteServicoController;
 use App\Http\Controllers\Prestador\PropostaController;
@@ -17,6 +18,11 @@ Route::get('/', function () {
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'authenticate'])->name('login.post');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+Route::get('/registar/cliente', [RegisterController::class, 'showClienteForm'])->name('register.cliente');
+Route::post('/registar/cliente', [RegisterController::class, 'storeCliente'])->name('register.cliente.store');
+Route::get('/registar/prestador', [RegisterController::class, 'showPrestadorForm'])->name('register.prestador');
+Route::post('/registar/prestador', [RegisterController::class, 'storePrestador'])->name('register.prestador.store');
 
 Route::get('/otp', [OtpController::class, 'show'])->name('otp.show');
 Route::post('/otp', [OtpController::class, 'verify'])->name('otp.verify');

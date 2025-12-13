@@ -10,6 +10,18 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
     <div class="container-fluid">
         <a class="navbar-brand" href="{{ route('home') }}">Txeka Jobs</a>
+        <div class="d-flex gap-2">
+            @auth
+                <span class="navbar-text text-white small">{{ auth()->user()->name }}</span>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button class="btn btn-sm btn-outline-light" type="submit">Sair</button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" class="btn btn-sm btn-outline-light">Entrar</a>
+                <a href="{{ route('register.cliente') }}" class="btn btn-sm btn-light text-primary">Criar conta</a>
+            @endauth
+        </div>
     </div>
 </nav>
 <main class="container">

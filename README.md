@@ -8,7 +8,7 @@ Plataforma de marketplace de serviços para Moçambique baseada em Laravel 11 e 
 3. Crie a base de dados `txekajobs` e execute `php artisan migrate && php artisan storage:link` (ou importe `schema.sql`).
 4. Arranque serviços locais: `php artisan serve`, `php artisan queue:work` e agende `php artisan schedule:run` por cron a cada minuto.
 5. Crie um administrador via `POST /api/admin/register` com header `Authorization: Bearer {ADMIN_REGISTRATION_TOKEN}`; o admin receberá email de verificação se tiver email definido.
-6. Aceda ao frontend: `/login` (OTP por SMS), complete o perfil em `/perfil` com foto/currículo e reenvie verificação de email; `/cliente/servicos` para pedidos, `/prestador/propostas` para propostas e `/admin/backups` para backups.
+6. Aceda ao frontend: crie conta em `/registar/cliente` ou `/registar/prestador`, valide email e OTP; complete o perfil em `/perfil` com foto/currículo; `/cliente/servicos` para pedidos, `/prestador/propostas` para propostas e `/admin/backups` para backups.
 
 ## Arquitectura em síntese
 - **Domínio**: matching de prestadores, monetização (leads, subscrições, reservas), reputação, litígios e notificações multicanal.
